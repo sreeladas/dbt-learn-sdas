@@ -11,6 +11,13 @@ models:
           - not_null
       - name: first_order_date
         description: NULL when a customer has not yet placed an order.
+      - name: number_of_orders
+        description: NULL when a customer has not yet placed an order.
+        tests:
+          - not_null
+      - name: lifetime_amount
+        tests:
+          - not_null
 
   - name: stg_customers
     description: This model cleans up customer data
@@ -21,6 +28,34 @@ models:
           - unique
           - not_null
 
+  - name: stg_payment
+    description: This model cleans up order data
+    columns:
+      - name: order_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: order_amount
+        tests:
+          - not_null
+              
+  - name: orders
+    description: This model cleans up order data
+    columns:
+      - name: order_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: customer id
+        tests:
+          - not_null
+      - name: amount
+        tests:
+          - not_null
+              
   - name: stg_orders
     description: This model cleans up order data
     columns:
