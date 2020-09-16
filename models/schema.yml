@@ -1,8 +1,25 @@
 version: 2
 
+version: 2
+
+sources:
+  - name: jaffle_shop
+    description: in-house data source containing business ids for customers and orders
+    tables:
+      - name: orders
+        description: order information including date, status, amount, customer_id
+      - name: customers
+        description: customer identifier information (user id, first name, last name)
+
+  - name: stripe
+    description: transaction information from stripe
+    tables:
+      - name: payments
+
+
 models:
   - name: customers
-    description: One record per customer
+    description: One record per customer, inlcuding identifiers (id, first name, last name), first order, most recent order, number of orders and lifetime value
     columns:
       - name: customer_id
         description: Primary key
@@ -11,11 +28,14 @@ models:
           - not_null
       - name: first_order_date
         description: NULL when a customer has not yet placed an order.
-      - name: number_of_orders
+      - name: most_recent_order_date
         description: NULL when a customer has not yet placed an order.
+      - name: number_of_orders
+        description: Number of orders the customer has placed, 0 when none.
         tests:
           - not_null
       - name: lifetime_amount
+        description: Total combined payments received for orders the customer has placed, 0 when none.      
         tests:
           - not_null
 
@@ -29,7 +49,7 @@ models:
           - not_null
 
   - name: stg_payment
-    description: This model cleans up order data
+    description: This staging model cleans up order payment data and filters unsuccessful payments
     columns:
       - name: order_id
         description: Primary key
@@ -37,11 +57,12 @@ models:
           - unique
           - not_null
       - name: order_amount
+        description: Total of successful payments received for this order
         tests:
           - not_null
               
   - name: orders
-    description: This model cleans up order data
+    description: This model combines order data with payment data
     columns:
       - name: order_id
         description: Primary key
@@ -49,10 +70,11 @@ models:
           - unique
           - not_null
       - name: customer_id
-        description: customer id
+        description: customer id, unique ID for customer who placed this order
         tests:
           - not_null
       - name: amount
+        description: total amount for this order
         tests:
           - not_null
               
@@ -64,7 +86,16 @@ models:
         tests:
           - unique
           - not_null
+      - name: customer_id
+        description: customer that the order was placed by
+        tests:
+          - not_null
+      - name: order_date
+        description: date that the order was placed
+        tests:
+          - not_null
       - name: status
+        description: status of this order
         tests:
           - accepted_values:
               values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
