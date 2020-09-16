@@ -1,0 +1,47 @@
+version: 2
+
+sources:
+  - name: jaffle_shop
+    description: in-house data source containing business ids for customers and orders
+    database: raw
+    tables:
+      - name: customers
+        description: customer identifier information (user id, first name, last name)
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+      - name: orders
+        description: order information including date, status, amount, customer_id
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+        loaded_at_field: "_etl_loaded_at"
+        freshness:
+         warn_after:
+          count: 24
+          period: hour
+         error_after:
+          count: 48
+          period: hour
+
+  - name: stripe
+    description: transaction information from stripe
+    database: raw
+    tables:
+      - name: payment
+        description: order payment information including date, status, amount, customer_id
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+        loaded_at_field: "_batched_at"
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+
+

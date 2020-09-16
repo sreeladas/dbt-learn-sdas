@@ -1,22 +1,5 @@
 version: 2
 
-version: 2
-
-sources:
-  - name: jaffle_shop
-    description: in-house data source containing business ids for customers and orders
-    tables:
-      - name: orders
-        description: order information including date, status, amount, customer_id
-      - name: customers
-        description: customer identifier information (user id, first name, last name)
-
-  - name: stripe
-    description: transaction information from stripe
-    tables:
-      - name: payments
-
-
 models:
   - name: customers
     description: One record per customer, inlcuding identifiers (id, first name, last name), first order, most recent order, number of orders and lifetime value
