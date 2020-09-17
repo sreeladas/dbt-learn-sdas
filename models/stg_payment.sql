@@ -1,9 +1,3 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
-
 select
     id as order_id,
     coalesce(sum(amount), 0)/100 as order_amount
